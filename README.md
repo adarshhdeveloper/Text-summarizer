@@ -1,6 +1,6 @@
 # AI Text Summarizer API
 
-A REST API built with Node.js, Express.js, and SQLite that summarizes text using a local algorithm or Mistral AI.
+A REST API built with Node.js, Express.js, and SQLite that summarizes text using a local algorithm or Mistral AI model
 
 ## Features
 
