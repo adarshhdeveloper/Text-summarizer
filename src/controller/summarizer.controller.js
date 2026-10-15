@@ -1,9 +1,15 @@
 import { summarizeText } from "../services/local-summarizer.service.js";
+import { summarizeWithAI } from "../services/ai-summarizer.service.js";
 
-export const summarizeController = (req, res) => {
+export const summarizeController = async (req, res) => {
   try {
-    const { text, maxSentences = 3, mode = "local" } = req.body;
+    const {
+      text,
+      maxSentences = 3,
+      mode = "local",
+    } = req.body;
 
+    // Validate text
     if (typeof text !== "string" || text.trim().length < 50) {
       return res.status(400).json({
         error: "Text must contain at least 50 characters",
@@ -16,6 +22,7 @@ export const summarizeController = (req, res) => {
       });
     }
 
+    // Validate maxSentences
     if (
       !Number.isInteger(maxSentences) ||
       maxSentences < 1 ||
@@ -26,31 +33,34 @@ export const summarizeController = (req, res) => {
       });
     }
 
+    // Validate mode
     if (!["local", "ai"].includes(mode)) {
       return res.status(400).json({
-        error: "Invalid mode",
+        error: "Mode must be local or ai",
       });
     }
 
-    if (mode === "ai") {
-      return res.status(501).json({
-        error: "AI mode is not implemented yet",
-      });
-    }
+    const cleanText = text.trim();
+    let summary;
 
-    const summary = summarizeText(text.trim(), maxSentences);
+    // Select summarization service
+    if (mode === "local") {
+      summary = summarizeText(cleanText, maxSentences);
+    } else {
+      summary = await summarizeWithAI(cleanText, maxSentences);
+    }
 
     return res.status(200).json({
       summary,
-      method: "local",
-      originalCharacters: text.length,
+      method: mode,
+      originalCharacters: cleanText.length,
       summaryCharacters: summary.length,
     });
   } catch (error) {
-    console.error("Summarization failed");
+  console.error("Mistral/API error:", error);
 
-    return res.status(500).json({
-      error: "Failed to summarize text",
-    });
-  }
+  return res.status(500).json({
+    error: "Failed to summarize text",
+  });
+}
 };
