@@ -1,8 +1,12 @@
 import express from "express";
-import healthRoutes from "./routes/health.routes.js"
+import healthRoutes from "./routes/health.routes.js";
+import summarizeRoutes from "./routes/summarizer.routes.js";
 
-const app = express()
+const app = express();
 
-app.use(healthRoutes)
+app.use(express.json({ limit: "100kb" }));
 
-export default app 
+app.use(healthRoutes);
+app.use(summarizeRoutes);
+
+export default app;
