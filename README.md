@@ -156,5 +156,4 @@ Mistral AI requests require valid API access and available quota. Local mode wor
 - Validating requests and handling errors.
 
 ## Author
-
-Your Name
+Adarsh Prajapati
