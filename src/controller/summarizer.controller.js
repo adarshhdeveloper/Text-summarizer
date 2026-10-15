@@ -1,5 +1,6 @@
 import { summarizeText } from "../services/local-summarizer.service.js";
 import { summarizeWithAI } from "../services/ai-summarizer.service.js";
+import db from "../config/database.js";
 
 export const summarizeController = async (req, res) => {
   try {
@@ -50,6 +51,13 @@ export const summarizeController = async (req, res) => {
       summary = await summarizeWithAI(cleanText, maxSentences);
     }
 
+    // Store the summary in the database
+    const insertSummary = db.prepare(`
+      INSERT INTO summaries (method, summary)
+      VALUES (?, ?)
+    `);
+
+insertSummary.run(mode, summary);
     return res.status(200).json({
       summary,
       method: mode,
